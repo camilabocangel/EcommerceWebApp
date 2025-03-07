@@ -49,13 +49,11 @@
                 <h4>Adidas Sneakers</h4>
                 <h2>$89</h2>
                 <select>
-                    <option>Select Size</option>
                     <option>34</option>
                     <option>37</option>
                     <option>40</option>
                     <option>42</option>
                     <option>44</option>
-
                 </select>
                 <input type="number" value="1">
                 <button class="normal">Add to Cart</button>
@@ -147,7 +145,7 @@
             <div class="col">
                 <img src="img/logo.png" class="logo" style="width: 150px; height: auto;">
                 <h4>Contact</h4>
-                <p><strong>Joaquin Aguilera - </strong>11111</p>
+                <p><strong>Joaquin Aguilera - </strong>78619</p>
                 <p><strong>Camila Bocangel - </strong>76625</p>
             </div>
             <div class="col methods">
@@ -174,6 +172,38 @@
         </script>
 
         <script src="script.js"></script>
+
+        <script>
+            // Función para obtener parámetros de la URL
+            function getProductId() {
+                const params = new URLSearchParams(window.location.search);
+                return params.get("id");
+            }
+        
+            const productId = getProductId();
+        
+            if (productId) {
+                fetch(`/api/products/${productId}`)
+                    .then(response => response.json())
+                    .then(product => {
+                        document.getElementById("MainImg").src = product.image;
+                        document.querySelector(".single-pro-details h4").textContent = product.brand + " " + product.name;
+                        document.querySelector(".single-pro-details h2").textContent = "$" + product.price;
+                        document.querySelector(".single-pro-details span").textContent = "Year: " + product.year;
+        
+                        // Cargar tallas
+                        fetch(`/api/products/${productId}/sizes`)
+                            .then(response => response.json())
+                            .then(sizes => {
+                                const select = document.querySelector(".single-pro-details select");
+                                select.innerHTML = sizes.map(size => `<option>${size}</option>`).join("");
+                            });
+                    })
+                    .catch(error => console.error("Error fetching product:", error));
+            }
+        </script>
+        
+
     </body>
 
 </html>
