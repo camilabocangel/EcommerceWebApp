@@ -75,16 +75,19 @@ body {
     left: 0;
 
 }
+
 #navbar{
     display: flex;
     align-items: center;
     justify-content: center;
 }
+
 #navbar li{
     list-style: none;
     padding: 0 20px;
     position: relative;
 }
+
 #navbar li a{
     text-decoration: none;
     font-size: 16px;
@@ -92,9 +95,11 @@ body {
     color: #222;
     transition: 0.3 ease;
 }
+
 #navbar li a:hover, #navbar li a.active {
     color: #088178;
 }
+
 #navbar li a.active::after, #navbar li a:hover::after {
     content: "";
     width: 30%;
@@ -104,6 +109,7 @@ body {
     bottom: -4px;
     left: 20px;
 }
+
 #hero{
     background-image: url("img/backgroundShoe.png");
     height: 90vh;
@@ -116,12 +122,15 @@ body {
     align-items: flex-start;
     justify-content: center;
 }
+
 #hero h4{
     padding-bottom: 15px;
 }
+
 #hero h1{
     color: #088178;
 }
+
 #hero button{
     background-image: url("img/button.png");
     background-color: transparent;
@@ -133,12 +142,14 @@ body {
     font-weight: 700;
     font-size: 15px;
 }
+
 #feature{
     display: flex;
     align-items: center;
     justify-content: space-between;
     flex-wrap: wrap;
 }
+
 #feature .fe-box{
     width: 160px;
     text-align: center;
@@ -148,6 +159,7 @@ body {
     border-radius: 4px;
     margin: 15px 0;
 }
+
 #feature .fe-box img{
     width: 100%;
     margin-bottom: 10px;
@@ -161,6 +173,7 @@ body {
      background-color: #f6f6f6;
      color: #088178;
 }
+
 #product1{
     text-align: center;
 }
@@ -184,31 +197,38 @@ body {
     transition: 0.2s ease;
     position: relative;
 }
+
 #product1 .pro:hover {
     box-shadow: 20px 20px 30px rgba(0, 0, 0, 0.06);
 }
+
 #product1 .pro img {
     width: 100%;
     border-radius: 20px;
 }
+
 #product1 .pro .des {
     text-align: start;
 }
+
 #product1 .pro .des span{
     color: #606063;
     font-size: 12px;
 }
+
 #product1 .pro .des h5{
     padding-top: 7px;
     color: #1a1a1a;
     font-size: 14px;
 }
+
 #product1 .pro .des h4{
     padding-top: 7px;
     color: #088178;
     font-size: 15px;
     font-weight: 700;
 }
+
 #product1 .pro .cart{
     width: 40px;
     height: 40px;

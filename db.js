@@ -32,7 +32,6 @@ async function connectDB() {
         PRIMARY KEY (product_id, size_id)
     )`);
 
-    // Verificar e insertar datos si está vacío
     const { count: productCount } = await db.get("SELECT COUNT(*) AS count FROM products");
     if (productCount === 0) await insertProducts(db);
 
@@ -42,7 +41,6 @@ async function connectDB() {
     return db;
 }
 
-// Insertar productos iniciales
 async function insertProducts(db) {
     const products = [
         { id: 1, brand: "Adidas", name: "Adi2000", image: "img/products/Adidas Adi2000.png", price: 86, year: 2000 },

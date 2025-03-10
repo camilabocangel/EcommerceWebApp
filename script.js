@@ -84,11 +84,11 @@ function addToCart(productId) {
 
 document.addEventListener("DOMContentLoaded", function () {
     console.log("Product ID:", productId);
-    fetch("/api/products") // Ajusta la ruta según cómo obtienes los productos
+    fetch("/api/products") 
         .then(response => response.json())
         .then(products => {
             const container = document.querySelector(".pro-container");
-            container.innerHTML = ""; // Limpiar el contenedor antes de llenarlo
+            container.innerHTML = ""; 
 
             products.forEach(product => {
                 const productHTML = `
@@ -105,7 +105,6 @@ document.addEventListener("DOMContentLoaded", function () {
                 container.innerHTML += productHTML;
             });
 
-            // Añadir eventos a cada imagen y nombre
             document.addEventListener("DOMContentLoaded", () => {
                 document.querySelectorAll(".product-link").forEach((element) => {
                     element.addEventListener("click", () => {
@@ -141,7 +140,6 @@ document.addEventListener("DOMContentLoaded", function () {
                     document.querySelector(".single-pro-details h2").textContent = "$" + product.price;
                     document.querySelector(".single-pro-details span").textContent = "Year: " + product.year;
 
-                    // Cargar tallas
                     fetch(`/api/products/${productId}/sizes`)
                         .then(response => response.json())
                         .then(sizes => {

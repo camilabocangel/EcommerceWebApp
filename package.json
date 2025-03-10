@@ -1,0 +1,24 @@
+{
+  "name": "ecommercewebapp",
+  "version": "1.0.0",
+  "main": "api.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/joackagui/EcommerceWebApp.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/joackagui/EcommerceWebApp/issues"
+  },
+  "homepage": "https://github.com/joackagui/EcommerceWebApp#readme",
+  "description": "",
+  "dependencies": {
+    "express": "^4.21.2"
+  }
+}

@@ -174,7 +174,6 @@
         <script src="script.js"></script>
 
         <script>
-            // Función para obtener parámetros de la URL
             function getProductId() {
                 const params = new URLSearchParams(window.location.search);
                 return params.get("id");
@@ -191,7 +190,6 @@
                         document.querySelector(".single-pro-details h2").textContent = "$" + product.price;
                         document.querySelector(".single-pro-details span").textContent = "Year: " + product.year;
         
-                        // Cargar tallas
                         fetch(`/api/products/${productId}/sizes`)
                             .then(response => response.json())
                             .then(sizes => {
