@@ -183,7 +183,7 @@
             const productId = getProductId();
         
             if (productId) {
-                fetch(`/api/products/${productId}`)
+                fetch(`http://localhost:3000/api/products/${productId}`)
                     .then(response => response.json())
                     .then(product => {
                         document.getElementById("MainImg").src = product.image;
