@@ -40,6 +40,8 @@ document.addEventListener("DOMContentLoaded", async () => {
             }
         });
 
+        assignProductClickEvents();
+
     } catch (error) {
         console.error("Error fetching products:", error);
     }
@@ -47,12 +49,13 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 function createProductHTML(product) {
     return `
-        <div class="pro-box">
-            <img src="${product.image}" alt="${product.name}">
-            <h3>${product.name}</h3>
-            <p>Price: $${product.price}</p>
-            <p>${product.brand}</p>
-            <p>Year: ${product.year}</p>
+        <div class="pro">
+            <img src="${product.image}" alt="${product.name}" class="product-link" data-id="${product.id}">
+            <div class="des">
+                <span>${product.brand}</span>
+                <h5>${product.name}</h5>
+                <h4> $${product.price}</h4>
+            </div>
         </div>
     `;
 }
@@ -65,68 +68,39 @@ function showNewArrivals(products) {
 
     container.innerHTML = latestProducts.map(product => `
         <div class="pro">
-            <img src="${product.image}" alt="${product.name}">
+            <img src="${product.image}" alt="${product.name}" class="product-link" data-id="${product.id}">
             <div class="des">
                 <span>${product.brand}</span>
-                <h5>${product.name}</h5>
+                <h5 class="product-link" data-id="${product.id}">${product.name}</h5>
                 <h4>$${product.price}</h4>
             </div>
-            <a href="#"><i class="fal fa-shopping-cart cart"></i></a>
         </div>
     `).join("");
+
+    assignProductClickEvents();
 }
+
+
+function assignProductClickEvents() {
+    document.querySelectorAll(".pro").forEach(element => {
+        element.addEventListener("click", (event) => {
+            const productId = event.currentTarget.querySelector(".product-link").getAttribute("data-id");
+            if (productId) {
+                window.location.href = `sproduct.html?id=${productId}`;
+            } else {
+                console.error("No se encontró el ID del producto.");
+            }
+        });
+    });
+}
+
+
 
 function addToCart(productId) {
     console.log("Product added to cart: ", productId);
 }
 
-
-
 document.addEventListener("DOMContentLoaded", function () {
-    console.log("Product ID:", productId);
-    fetch("/api/products") 
-        .then(response => response.json())
-        .then(products => {
-            const container = document.querySelector(".pro-container");
-            container.innerHTML = ""; 
-
-            products.forEach(product => {
-                const productHTML = `
-                    <div class="pro">
-                        <img src="${product.image}" alt="${product.name}" class="product-link" data-id="${product.id}">
-                        <div class="des">
-                            <span>${product.brand}</span>
-                            <h5 class="product-link" data-id="${product.id}">${product.name}</h5>
-                            <h4>$${product.price}</h4>
-                        </div>
-                        <a href="#"><i class="fal fa-shopping-cart cart"></i></a>
-                    </div>
-                `;
-                container.innerHTML += productHTML;
-            });
-
-            document.addEventListener("DOMContentLoaded", () => {
-                document.querySelectorAll(".product-link").forEach((element) => {
-                    element.addEventListener("click", () => {
-                        const productId = element.getAttribute("data-id");
-                        if (productId) {
-                            window.location.href = `sproduct.html?id=${productId}`;
-                        } else {
-                            console.error("No se encontró el ID del producto.");
-                        }
-                    });
-                });
-            });
-            
-            
-        })
-        .catch(error => console.error("Error cargando productos:", error));
-});
-
-
-
-document.addEventListener("DOMContentLoaded", function () {
-    console.log("Product ID:", productId);
     if (window.location.pathname.includes("sproduct.html")) {
         const params = new URLSearchParams(window.location.search);
         const productId = params.get("id");
@@ -140,15 +114,27 @@ document.addEventListener("DOMContentLoaded", function () {
                     document.querySelector(".single-pro-details h2").textContent = "$" + product.price;
                     document.querySelector(".single-pro-details span").textContent = "Year: " + product.year;
 
-                    fetch(`/api/products/${productId}/sizes`)
-                        .then(response => response.json())
-                        .then(sizes => {
-                            const select = document.querySelector(".single-pro-details select");
-                            select.innerHTML = sizes.map(size => `<option>${size}</option>`).join("");
-                        });
+
                 })
                 .catch(error => console.error("Error fetching product:", error));
         }
     }
 });
 
+
+document.addEventListener("DOMContentLoaded", function () {
+    const faqs = document.querySelectorAll(".faq-question");
+
+    faqs.forEach((faq) => {
+        faq.addEventListener("click", function () {
+            document.querySelectorAll(".faq-answer").forEach(answer => {
+                if (answer !== this.nextElementSibling) {
+                    answer.style.display = "none";
+                }
+            });
+
+            let answer = this.nextElementSibling;
+            answer.style.display = (answer.style.display === "block") ? "none" : "block";
+        });
+    });
+});

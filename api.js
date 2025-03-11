@@ -1,4 +1,4 @@
-const connectDB = require('./db'); // Conexión con la base de datos
+const connectDB = require('./db');
 
 async function getProductById(req, res) {
     try {

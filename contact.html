@@ -1,30 +1,120 @@
 <!DOCTYPE html>
 <html lang="en">
 
-    <head>
-        <meta charset="UTF-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Ecommerce</title>
-        <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" />
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ecommerce</title>
+    <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" />
+    <link rel="stylesheet" href="style.css">
+</head>
 
-        <link rel="stylesheet" href="style.css">
-    </head>
+<body>
+    <section id="header">
+        <img src="img/logo.png" class="logo" style="width: 150px; height: auto;">
+        <div>
+            <ul id="navbar">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="shop.html">Shop</a></li>
+                <li><a href="blog.html">Blog</a></li>
+                <li><a href="about.html">About</a></li>
+                <li><a class="active" href="contact.html">Contact</a></li>
+                <li><a href="cart.html"><i class="far fa-shopping-bag"></i></a></li>
+            </ul>
+        </div>
+    </section>
 
-    <body>
-        <section id = "header">
-            <img src="img/logo.png" class="logo" style="width: 150px; height: auto;">
-            <div>
-                <ul id="navbar">
-                    <li><a href="index.html">Home</a></li>,
-                    <li><a href="shop.html">Shop</a></li>
-                    <li><a href="blog.html">Blog</a></li>
-                    <li><a href="about.html">About</a></li>
-                    <li><a class="active"href="contact.html">Contact</a></li>
-                    <li><a href="cart.html"><i class="far fa-shopping-bag"></i></a></li>,
-                </ul>
+    <!-- Preguntas Frecuentes -->
+    <section id="faq" class="section-p1">
+        <h2>Preguntas Frecuentes</h2>
+        <div class="faq-container">
+            <div class="faq">
+                <button class="faq-question">¿Cómo hago un pedido?</button>
+                <div class="faq-answer">
+                    <p>Selecciona los productos que deseas, agrégales al carrito y sigue el proceso de pago.</p>
+                </div>
             </div>
-        </section>
-        <script src="script.js"></script>
-    </body>
+
+            <div class="faq">
+                <button class="faq-question">¿Cuáles son los métodos de pago aceptados?</button>
+                <div class="faq-answer">
+                    <p>Aceptamos tarjetas de crédito, débito, PayPal y transferencias bancarias.</p>
+                </div>
+            </div>
+
+            <div class="faq">
+                <button class="faq-question">¿Cuánto tarda en llegar mi pedido?</button>
+                <div class="faq-answer">
+                    <p>Depende de tu ubicación. Generalmente, entre 3 a 7 días hábiles.</p>
+                </div>
+            </div>
+
+            <div class="faq">
+                <button class="faq-question">¿Puedo devolver un producto?</button>
+                <div class="faq-answer">
+                    <p>Sí, dentro de los primeros 15 días después de recibirlo. Consulta nuestra política de devoluciones.</p>
+                </div>
+            </div>
+
+            <div class="faq">
+                <button class="faq-question">¿Los productos tienen garantía?</button>
+                <div class="faq-answer">
+                    <p>Sí, todos los productos tienen una garantía de 6 meses.</p>
+                </div>
+            </div>
+
+            <div class="faq">
+                <button class="faq-question">¿Hacen envíos internacionales?</button>
+                <div class="faq-answer">
+                    <p>Sí, realizamos envíos a varios países con tarifas variables.</p>
+                </div>
+            </div>
+
+            <div class="faq">
+                <button class="faq-question">¿Cómo contacto con atención al cliente?</button>
+                <div class="faq-answer">
+                    <p>Puedes escribirnos a contacto@ecommerce.com o llamarnos al +123456789.</p>
+                </div>
+            </div>
+
+            <div class="faq">
+                <button class="faq-question">¿Tienen descuentos o promociones?</button>
+                <div class="faq-answer">
+                    <p>Sí, revisa nuestra sección de ofertas especiales cada mes.</p>
+                </div>
+            </div>
+
+            <div class="faq">
+                <button class="faq-question">¿Cómo puedo rastrear mi pedido?</button>
+                <div class="faq-answer">
+                    <p>Recibirás un código de seguimiento por correo al confirmar tu compra.</p>
+                </div>
+            </div>
+
+            <div class="faq">
+                <button class="faq-question">¿Qué hago si mi pedido llega dañado?</button>
+                <div class="faq-answer">
+                    <p>Contáctanos de inmediato con fotos del producto dañado y te enviaremos un reemplazo.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="section-p1">
+        <div class="col">
+            <img src="img/logo.png" class="logo" style="width: 150px; height: auto;">
+            <h4>Contact</h4>
+            <p><strong>Joaquin Aguilera - </strong>78619</p>
+            <p><strong>Camila Bocangel - </strong>76625</p>
+        </div>
+        <div class="col methods">
+            <p>Secured Payment Gateways</p>
+            <img src="img/pay.png">
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+
 </html>

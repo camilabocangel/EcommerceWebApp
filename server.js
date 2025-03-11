@@ -4,8 +4,6 @@ const { getProducts, getProductById, addToCart, getCart } = require('./api');
 
 const app = express();
 
-
-
 app.use(express.json());
 app.use(cors());
 
