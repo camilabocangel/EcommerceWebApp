@@ -51,7 +51,7 @@
             <label for="quantityInput">Quantity:</label>
             <input type="number" id="quantityInput" min="1" value="1">
             
-            <button onclick="location.href='cart.html'" id="addToCart" class="normal">Add to Cart</button>
+            <button onclick="addToCart()" id="addToCart" class="normal">Add to Cart</button>
         </div>
     </section>
 
@@ -95,9 +95,45 @@
                     }
 
                     return fetch(`http://localhost:3000/api/products/${productId}`);
-                })
-                
+                })  
         }
+
+        function addToCart() {
+            const productId = new URLSearchParams(window.location.search).get("id");
+            const productName = document.getElementById("productName").textContent;
+            const productPrice = parseFloat(document.getElementById("productPrice").textContent);
+            const productImage = document.getElementById("MainImg").src;
+            const quantity = parseInt(document.getElementById("quantityInput").value) || 1; //Tomamos la cantidad ingresada
+
+            const product = {
+                id: productId,
+                name: productName,
+                price: productPrice,
+                image: productImage,
+                quantity: quantity, //Usamos la cantidad selecciona
+            };
+
+    // Obtener carrito del localStorage
+            let cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+    // Verificar si el producto ya está en el carrito
+            const productIndex = cart.findIndex(item => item.id === productId);
+
+            if (productIndex !== -1) {
+        // Si el producto ya está en el carrito, sumamos la cantidad nueva
+             cart[productIndex].quantity += quantity;
+            } else {
+        // Si no está en el carrito, lo agregamos
+                cart.push(product);
+            }
+
+    // Guardar carrito actualizado en el localStorage
+            localStorage.setItem("cart", JSON.stringify(cart));
+
+    // Redirigir al carrito
+            window.location.href = "cart.html";
+        }
+
     </script>
 
 </body>

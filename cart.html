@@ -1,88 +1,166 @@
 <!DOCTYPE html>
 <html lang="en">
 
-    <head>
-        <meta charset="UTF-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Ecommerce</title>
-        <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" />
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ecommerce</title>
+    <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" />
+    <link rel="stylesheet" href="style.css">
+</head>
 
-        <link rel="stylesheet" href="style.css">
-    </head>
+<body>
+    <section id="header">
+        <img src="img/logo.png" class="logo" style="width: 150px; height: auto;">
+        <div>
+            <ul id="navbar">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="shop.html">Shop</a></li>
+                <li><a href="blog.html">Blog</a></li>
+                <li><a href="about.html">About</a></li>
+                <li><a href="contact.html">Contact</a></li>
+                <li id="lg-bag"><a class="active" href="cart.html"><i class="far fa-shopping-bag"></i></a></li>
+            </ul>
+        </div>
+    </section>
 
-    <body>
-        <section id = "header">
-            <img src="img/logo.png" class="logo" style="width: 150px; height: auto;">
-            <div>
-                <ul id="navbar">
-                    <li><a href="index.html">Home</a></li>,
-                    <li><a href="shop.html">Shop</a></li>
-                    <li><a href="blog.html">Blog</a></li>
-                    <li><a href="about.html">About</a></li>
-                    <li><a href="contact.html">Contact</a></li>
-                    <li id="lg-bag"><a class="active"href="cart.html"><i class="far fa-shopping-bag"></i></a></li>,
-                </ul>
-            </div>
-        </section>
-        <section id="cart" class="section-p1">
-            <table width = 100%>
-                <thead>
-                    <td>Remove</td>
-                    <td>Image</td>
-                    <td>Product</td>
-                    <td>Price</td>
-                    <td>Quantity</td>
-                    <td>Subtotal</td>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td><a href="#"><i class="far fa-times-circle"></i></a></td>
-                        <td><img src="img/products/Adi2000.png" alt=""></td>
-                        <td> White sneakers</td>
-                        <td> $89</td>
-                        <td>1</td>
-                        <td> $89</td>
-                    </tr>
-                </tbody>
+    <section id="cart" class="section-p1">
+        <table width="100%">
+            <thead>
+                <td>Remove</td>
+                <td>Image</td>
+                <td>Product</td>
+                <td>Price</td>
+                <td>Quantity</td>
+                <td>Subtotal</td>
+            </thead>
+            <tbody id="cart-items">
+                
+            </tbody>
+        </table>
+    </section>
+
+    <section id="cart-add" class="section-p1">
+        <div id="subtotal">
+            <h3>Cart Totals</h3>
+            <table>
+                <tr>
+                    <td>Cart Subtotal</td>
+                    <td>$</td>
+                </tr>
+                <tr>
+                    <td>Shipping</td>
+                    <td>Free</td>
+                </tr>
+                <tr>
+                    <td><strong>Total</strong></td>
+                    <td><strong>$</strong></td>
+                </tr>
             </table>
-        </section>
-        <section id="cart-add" class="section-p1">
-            <div id="subtotal">
-                <h3>Cart Totals</h3>
-                <table>
-                    <tr>
-                        <td>Cart Subtotal</td>
-                        <td>$</td>
-                    </tr>
-                    <tr>
-                        <td>Shipping</td>
-                        <td>Free</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Total</strong></td>
-                        <td><strong>$</strong></td>
-                    </tr>
-                </table>
-                <button class="normal"> Proceed to Checkout</button>
-            </div>
+            <div class="button-container">
+                <button class="normal">Proceed to Checkout</button>
+            
+                <!-- Contenedor relativo para anclar el Pay Method -->
+                <div class="pay-method-wrapper">
+                    <button class="normal" id="payMethodBtn">Pay Method</button>
+            
+                    <!-- Opciones de pago (posicionado relativo al botón) -->
+                    <div id="paymentOptions" style="display: none;">
+                        <h4>Select Payment Method</h4>
+                        <div>
+                            <input type="radio" id="paypal" name="paymentMethod" value="PayPal">
+                            <label for="paypal">PayPal</label>
+                        </div>
+                        <div>
+                            <input type="radio" id="creditCard" name="paymentMethod" value="CreditCard">
+                            <label for="creditCard">Credit Card</label>
+                        </div>
+                        <div id="creditCardDetails" style="display: none;">
+                            <label for="cardNumber">Card Number:</label>
+                            <input type="text" id="cardNumber" placeholder="Enter your card number">
+                        
+                            <label for="cardExpiry">Expiry Date:</label>
+                            <input type="text" id="cardExpiry" placeholder="MM/YY">
+                        
+                            <label for="cardCvc">CVC:</label>
+                            <input type="text" id="cardCvc" placeholder="Enter CVC">
+                        </div>                        
+                    </div>
+                </div>
+            </div>                       
+        </div>
+    </section>
 
-        </section>
+    <footer class="section-p1">
+        <div class="col">
+            <img src="img/logo.png" class="logo" style="width: 150px; height: auto;">
+            <h4>Contact</h4>
+            <p><strong>Joaquin Aguilera - </strong>11111</p>
+            <p><strong>Camila Bocangel - </strong>76625</p>
+        </div>
+        <div class="col methods">
+            <p>Secured Payment Gateways</p>
+            <img src="img/pay.png">
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+        const cart = JSON.parse(localStorage.getItem("cart")) || [];
+        const cartItemsContainer = document.getElementById("cart-items");
+
+        // Si el carrito está vacío
+        if (cart.length === 0) {
+            cartItemsContainer.innerHTML = "<tr><td colspan='6'>Your cart is empty</td></tr>";
+        } else {
+            // Si el carrito no está vacío, mostrar los productos
+            cart.forEach(product => {
+                const subtotal = (product.price * product.quantity).toFixed(2);
+
+                const row = document.createElement("tr");
+                row.innerHTML = `
+                    <td><a href="#" onclick="removeFromCart('${product.id}')"><i class="far fa-times-circle"></i></a></td>
+                    <td><img src="${product.image}" alt="Product Image" width="100"></td>
+                    <td>${product.name}</td>
+                    <td>$${product.price}</td>
+                    <td>${product.quantity}</td>
+                    <td>$${subtotal}</td>
+                `;
+                cartItemsContainer.appendChild(row);
+            });
+
+            
+            const total = cart.reduce((sum, product) => sum + (product.price * product.quantity), 0).toFixed(2);
+            document.querySelector("#subtotal tr:nth-child(1) td:last-child").textContent = "$" + total;
+
+            document.querySelector("#subtotal tr:nth-child(3) td:last-child").textContent = "$" + total;
+        }
+    });
+
+    // Función para eliminar productos del carrito
+    function removeFromCart(productId) {
+        let cart = JSON.parse(localStorage.getItem("cart")) || [];
+        cart = cart.filter(product => product.id !== productId);
+        localStorage.setItem("cart", JSON.stringify(cart));
+
+        // Actualizar la vista
+        location.reload();
+    }
+
+    // Función para actualizar la cantidad de un producto
+    function updateQuantity(productId, quantity) {
+        let cart = JSON.parse(localStorage.getItem("cart")) || [];
+        const productIndex = cart.findIndex(item => item.id === productId);
+        if (productIndex !== -1) {
+            cart[productIndex].quantity = parseInt(quantity);
+            localStorage.setItem("cart", JSON.stringify(cart));
+            location.reload();
+        }
+    }
     
-        <footer class="section-p1">
-            <div class="col">
-                <img src="img/logo.png" class="logo" style="width: 150px; height: auto;">
-                <h4>Contact</h4>
-                <p><strong>Joaquin Aguilera - </strong>11111</p>
-                <p><strong>Camila Bocangel - </strong>76625</p>
-            </div>
-            <div class="col methods">
-                <p>Secured Payment Gateways</p>
-                <img src="img/pay.png">
-            </div>
-        </footer>
-
-        <script src="script.js"></script>
-    </body>
+    </script>
+</body>
 
 </html>

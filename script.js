@@ -138,3 +138,20 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 });
+
+document.getElementById("payMethodBtn").addEventListener("click", function() {
+    const paymentOptions = document.getElementById("paymentOptions");
+    paymentOptions.style.display = paymentOptions.style.display === "none" ? "block" : "none";
+});
+
+// Mostrar campos de tarjeta de crédito cuando se seleccione la opción
+document.querySelectorAll('input[name="paymentMethod"]').forEach(function(radio) {
+    radio.addEventListener("change", function() {
+        if (this.value === "CreditCard") {
+            document.getElementById("creditCardDetails").style.display = "block";
+        } else {
+            document.getElementById("creditCardDetails").style.display = "none";
+        }
+    });
+});
+
