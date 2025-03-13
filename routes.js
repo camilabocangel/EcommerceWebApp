@@ -9,5 +9,4 @@ router.get('/api/products/:id', api.getProductById);
 router.post('/cart', api.addToCart);
 router.get('/cart', api.getCart);
 
-
 module.exports = router;

@@ -95,11 +95,6 @@ function assignProductClickEvents() {
 }
 
 
-
-function addToCart(productId) {
-    console.log("Product added to cart: ", productId);
-}
-
 document.addEventListener("DOMContentLoaded", function () {
     if (window.location.pathname.includes("sproduct.html")) {
         const params = new URLSearchParams(window.location.search);
@@ -138,3 +133,57 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 });
+
+
+document.addEventListener('DOMContentLoaded', () => {
+    const cartTableBody = document.querySelector('#cart-table-body');
+    const cartSubtotal = document.querySelector('#cart-subtotal');
+    const cartTotal = document.querySelector('#cart-total');
+
+    const products = JSON.parse(localStorage.getItem('products')) || [];
+
+    if (products.length === 0) {
+        cartTableBody.innerHTML = '<tr><td colspan="7">Your cart is empty.</td></tr>';
+        return;
+    }
+
+    let total = 0;
+
+    products.forEach(item => {
+        const product = products.find(p => p.id == item.id); 
+
+        if (product) {
+            const subtotal = product.price * item.quantity;
+            total += subtotal;
+
+            cartTableBody.innerHTML += `
+                <tr>
+                    <td><a href="#" class="remove-item" data-id="${item.id}"><i class="far fa-times-circle"></i></a></td>
+                    <td><img src="${product.image}" alt="${product.name}" width="50"></td>
+                    <td>${product.name}</td>
+                    <td>$${product.price}</td>
+                    <td>${item.quantity}</td>
+                    <td>$${subtotal}</td>
+                </tr>`;
+        }
+    });
+
+    cartSubtotal.textContent = `$${total}`;
+    cartTotal.innerHTML = `<strong>$${total}</strong>`;
+
+    document.querySelectorAll('.remove-item').forEach(button => {
+        button.addEventListener('click', (e) => {
+            e.preventDefault();
+            const id = button.getAttribute('data-id');
+            removeFromCart(id);
+        });
+    });
+});
+
+function removeFromCart(id) {
+    let products = JSON.parse(localStorage.getItem('products')) || [];
+    products = products.filter(product => product.id != id); 
+    localStorage.setItem('products', JSON.stringify(products));
+    location.reload(); 
+}
+
