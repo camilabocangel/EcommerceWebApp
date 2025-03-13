@@ -204,6 +204,137 @@ function removeFromCart(id) {
     localStorage.setItem('products', JSON.stringify(products));
     location.reload(); 
 }
+/********************************************************************* */
+// Interfaz de estrategia de pago
+class PaymentStrategy {
+    pay() {
+        throw "Este método debe ser implementado en una subclase.";
+    }
+}
+
+// Estrategia concreta: PayPal
+class PayPalPayment extends PaymentStrategy {
+    pay() {
+        console.log("Simulando pago con PayPal...");
+        // Aquí se simula el pago, puedes realizar alguna lógica o actualización de estado
+        alert("Pago realizado con PayPal");
+    }
+}
+
+// Estrategia concreta: Tarjeta de Crédito
+class CreditCardPayment extends PaymentStrategy {
+    pay() {
+        console.log("Simulando pago con tarjeta de crédito...");
+        // Aquí se simula el pago, puedes realizar alguna lógica o actualización de estado
+        alert("Pago realizado con tarjeta de crédito");
+    }
+}
+
+// Contexto para manejar el método de pago
+class PaymentContext {
+    constructor(paymentStrategy) {
+        this.paymentStrategy = paymentStrategy;
+    }
+
+    setPaymentStrategy(paymentStrategy) {
+        this.paymentStrategy = paymentStrategy;
+    }
+
+    executePayment() {
+        this.paymentStrategy.pay();
+    }
+}
+document.addEventListener('DOMContentLoaded', async () => {
+    const payMethodBtn = document.querySelector('#payMethodBtn');
+    const paymentOptions = document.querySelector('#paymentOptions');
+    const creditCardOption = document.querySelector('#creditCard');
+    const creditCardDetails = document.querySelector('#creditCardDetails');
+    const payButton = document.querySelector('#payButton');
+    const cartTableBody = document.querySelector('#cart-table-body');
+    const cartSubtotal = document.querySelector('#cart-subtotal');
+    const cartTotal = document.querySelector('#cart-total');
+
+    // Configurando las estrategias de pago
+    const paypalStrategy = new PayPalPayment();
+    const creditCardStrategy = new CreditCardPayment();
+
+    // Creando el contexto de pago
+    let paymentContext = new PaymentContext(paypalStrategy); // Comienza con PayPal por defecto
+
+    // Mostrar opciones de pago al hacer clic en el botón "Pay Method"
+    payMethodBtn.addEventListener('click', () => {
+        // Alternar la clase "show" para mostrar u ocultar el contenedor de opciones de pago
+        paymentOptions.classList.toggle('show');
+    });
+
+    // Mostrar detalles de tarjeta si se selecciona "Tarjeta de Crédito"
+    creditCardOption.addEventListener('change', () => {
+        creditCardDetails.style.display = creditCardOption.checked ? 'block' : 'none';
+        if (creditCardOption.checked) {
+            paymentContext.setPaymentStrategy(creditCardStrategy); // Cambiar la estrategia a Tarjeta de Crédito
+        }
+    });
+
+    // Establecer la estrategia de pago a PayPal cuando se selecciona esa opción
+    const paypalOption = document.querySelector('#paypal');
+    paypalOption.addEventListener('change', () => {
+        if (paypalOption.checked) {
+            paymentContext.setPaymentStrategy(paypalStrategy); // Cambiar la estrategia a PayPal
+            creditCardDetails.style.display = 'none'; // Ocultar detalles de tarjeta de crédito
+        }
+    });
+
+    // Vaciar el carrito (localStorage)
+    function clearCart() {
+        localStorage.removeItem('products');
+    }
+
+    // Notificación de pago exitoso
+    function showSuccessMessage() {
+        const successMessage = document.createElement('div');
+        successMessage.className = 'payment-success';
+        successMessage.textContent = '¡Pago exitoso! Redirigiendo a la página de inicio...';
+        document.body.appendChild(successMessage);
+        console.log("Iniciando el proceso de pago...");
+
+        setTimeout(() => {
+            console.log('Redirigiendo a la página de inicio...');
+            successMessage.remove();
+            window.location.href = '/index.html'; // Redirigir a la página de inicio
+        }, 2000); // El mensaje se muestra por 2 segundos antes de redirigir
+    }
+
+    // Botón de pago
+    if (payButton) {
+        payButton.addEventListener('click', () => {
+            // Deshabilitar el botón de pago para evitar pagos duplicados
+            payButton.disabled = true;
+            payButton.textContent = 'Procesando...';
+
+            // Simulando un retraso de 5 segundos para el proceso de pago
+            setTimeout(() => {
+                // Ejecutar el pago usando la estrategia seleccionada
+                paymentContext.executePayment().then(() => {
+                    // Vaciar el carrito después del pago exitoso
+                    clearCart();
+                    
+                    // Mostrar la notificación de pago exitoso
+                    showSuccessMessage();
+                }).catch((error) => {
+                    // Si ocurre algún error, habilitar el botón nuevamente y mostrar un mensaje de error
+                    console.error('Error en el pago:', error);
+                    payButton.disabled = false;
+                    payButton.textContent = 'Pagar';
+                });
+            }, 5000); // Simulando un tiempo de espera de 5 segundos (5000 ms)
+        });
+    }
+});
+
+
+
+
+
 
 
 
