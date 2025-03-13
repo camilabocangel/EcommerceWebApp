@@ -1,4 +1,4 @@
-const connectDB = require('./db'); // Conexión con la base de datos
+const connectDB = require('./db');
 
 async function getProductById(req, res) {
     try {
@@ -30,7 +30,7 @@ async function addToCart(req, res) {
     const { productId, quantity } = req.body;
     try {
         const db = await connectDB();
-        await db.run('INSERT INTO cart (product_id, quantity) VALUES (?, ?)', [productId, quantity]);
+        await db.run('INSERT INTO products (product_id, quantity) VALUES (?, ?)', [productId, quantity]);
         res.json({ message: 'Product added to cart' });
     } catch (error) {
         console.error('Error while adding to cart:', error);
@@ -41,12 +41,46 @@ async function addToCart(req, res) {
 async function getCart(req, res) {
     try {
         const db = await connectDB();
-        const cart = await db.all('SELECT * FROM cart');
-        res.json(cart);
+        const products = await db.all('SELECT * FROM products');
+        res.json(products);
     } catch (error) {
         console.error('Error while loading cart:', error);
         res.status(500).json({ error: 'Error while loading cart' });
     }
 }
 
-module.exports = { getProducts, getProductById, addToCart, getCart };
+
+async function updateStock(req, res) {
+    try {
+        const db = await connectDB();
+        const { cartItems } = req.body;
+
+        if (!Array.isArray(cartItems) || cartItems.length === 0) {
+            return res.status(400).json({ error: 'cartItems debe ser un array no vacío.' });
+        }
+
+        for (const item of cartItems) {
+            const { id, quantity } = item;
+
+            // Verificar si el producto existe
+            const product = await db.get('SELECT * FROM products WHERE id = ?', [id]);
+            if (!product) {
+                console.warn(`Producto con id ${id} no encontrado.`);
+                continue; // Salta este producto si no existe
+            }
+
+            // Actualizar el stock restando la cantidad del carrito
+            await db.run('UPDATE products SET quantity = quantity - ? WHERE id = ?', [quantity, id]);
+            console.log(`Stock actualizado para el producto ${id}: -${quantity}`);
+        }
+
+        res.json({ message: 'Stock actualizado correctamente.' });
+
+    } catch (error) {
+        console.error('Error al actualizar el stock:', error);
+        res.status(500).json({ error: 'Error interno del servidor.' });
+    }
+}
+
+module.exports = { getProducts, getProductById, addToCart, getCart, updateStock };
+
