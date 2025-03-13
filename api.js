@@ -49,4 +49,38 @@ async function getCart(req, res) {
     }
 }
 
-module.exports = { getProducts, getProductById, addToCart, getCart };
+
+async function updateStock(req, res) {
+    try {
+        const db = await connectDB();
+        const { cartItems } = req.body;
+
+        if (!Array.isArray(cartItems) || cartItems.length === 0) {
+            return res.status(400).json({ error: 'cartItems debe ser un array no vacío.' });
+        }
+
+        for (const item of cartItems) {
+            const { id, quantity } = item;
+
+            // Verificar si el producto existe
+            const product = await db.get('SELECT * FROM products WHERE id = ?', [id]);
+            if (!product) {
+                console.warn(`Producto con id ${id} no encontrado.`);
+                continue; // Salta este producto si no existe
+            }
+
+            // Actualizar el stock restando la cantidad del carrito
+            await db.run('UPDATE products SET quantity = quantity - ? WHERE id = ?', [quantity, id]);
+            console.log(`Stock actualizado para el producto ${id}: -${quantity}`);
+        }
+
+        res.json({ message: 'Stock actualizado correctamente.' });
+
+    } catch (error) {
+        console.error('Error al actualizar el stock:', error);
+        res.status(500).json({ error: 'Error interno del servidor.' });
+    }
+}
+
+module.exports = { getProducts, getProductById, addToCart, getCart, updateStock };
+

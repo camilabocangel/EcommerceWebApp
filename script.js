@@ -186,16 +186,108 @@ document.addEventListener('DOMContentLoaded', async () => {
         cartTableBody.innerHTML = '<tr><td colspan="6">Error loading cart data.</td></tr>';
     }
 
+    const payMethodBtn = document.querySelector('#payMethodBtn');
+    const paymentOptions = document.querySelector('#paymentOptions');
+    const creditCardOption = document.querySelector('#creditCard');
+    const payPalOption = document.querySelector('#paypal');
+    const creditCardDetails = document.querySelector('#creditCardDetails');
+    const completePurchase = document.querySelector('#completePurchase');
+
     payMethodBtn.addEventListener('click', () => {
         paymentOptions.style.display = (paymentOptions.style.display === 'none' || paymentOptions.style.display === '') 
             ? 'block' 
             : 'none';
     });
 
-    // Mostrar campos de tarjeta si se elige "Credit Card"
     creditCardOption.addEventListener('change', () => {
         creditCardDetails.style.display = creditCardOption.checked ? 'block' : 'none';
     });
+    payPalOption.addEventListener('change', () => {
+        creditCardDetails.style.display = payPalOption.checked ? 'block' : 'none';
+    });
+    
+    const showError = (input, message) => {
+        const errorSpan = document.createElement('span');
+        errorSpan.className = 'input-error';
+        errorSpan.style.color = 'red';
+        errorSpan.style.fontSize = '12px';
+        errorSpan.textContent = message;
+        input.style.border = '2px solid red';
+        input.parentNode.appendChild(errorSpan);
+    };
+
+    const clearAllErrors = () => {
+        document.querySelectorAll('.input-error').forEach(span => span.remove());
+        document.querySelectorAll('#cardNumber, #cardExpiry, #cardCvc').forEach(input => {
+            input.style.border = '1px solid #ccc';
+        });
+    };
+
+    // Valida los campos de la tarjeta
+    const validateCardDetails = () => {
+        clearAllErrors(); // Limpiar errores anteriores
+
+        const cardNumber = document.querySelector('#cardNumber');
+        const cardExpiry = document.querySelector('#cardExpiry');
+        const cardCvc = document.querySelector('#cardCvc');
+
+        let isValid = true;
+
+        if (!/^\d{16}$/.test(cardNumber.value)) {
+            showError(cardNumber, 'Card number must be 16 digits.');
+            isValid = false;
+        }
+        if (!/^\d{4}$/.test(cardExpiry.value)) {
+            showError(cardExpiry, 'Expiry must be 4 digits (MMYY).');
+            isValid = false;
+        }
+        if (!/^\d{3}$/.test(cardCvc.value)) {
+            showError(cardCvc, 'CVC must be 3 digits.');
+            isValid = false;
+        }
+
+        return isValid;
+    };
+
+
+    const updateStock = async () => {
+        const cartItems = JSON.parse(localStorage.getItem('products')) || [];
+        console.log('Enviando cartItems:', cartItems); // Verifica en consola
+    
+        try {
+            const response = await fetch('http://localhost:3000/api/update-stock', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ cartItems }),
+            });
+    
+            const data = await response.json();
+            console.log('Respuesta del servidor:', data);
+    
+            if (!response.ok) {
+                throw new Error(data.error || 'Error al actualizar el stock');
+            }
+        } catch (error) {
+            console.error('Error al actualizar el stock:', error);
+        }
+    };
+    
+
+    // Evento del botón "Complete Purchase"
+    completePurchase.addEventListener('click', async () => {
+        if ((creditCardOption.checked || payPalOption.checked) && !validateCardDetails()) {
+            return; // Detener si la validación falla
+        }
+
+        // Actualizar el stock antes de vaciar el carrito
+        await updateStock();
+
+        // Limpiar el carrito si todo está validado
+        localStorage.removeItem('products');
+        alert('Purchase completed successfully!');
+        window.location.reload(); // Recargar la página
+    });
+
 });
 
 function removeFromCart(id) {

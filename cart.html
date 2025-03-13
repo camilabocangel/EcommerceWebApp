@@ -83,6 +83,8 @@
                     
                         <label for="cardCvc">CVC:</label>
                         <input type="text" id="cardCvc" placeholder="Enter CVC">
+
+                        <button class="normal" id="completePurchase">Complete Purchase</button>
                     </div>                        
                 </div>
             </div>
@@ -93,7 +95,7 @@
         <div class="col">
             <img src="img/logo.png" class="logo" style="width: 150px; height: auto;">
             <h4>Contact</h4>
-            <p><strong>Joaquin Aguilera - </strong>11111</p>
+            <p><strong>Joaquin Aguilera - </strong>78619</p>
             <p><strong>Camila Bocangel - </strong>76625</p>
         </div>
         <div class="col methods">
@@ -103,6 +105,40 @@
     </footer>
 
     <script src="script.js"></script>
+    
+    <script>
+        document.getElementById('completePurchase').addEventListener('click', async () => {
+    const errorContainer = document.getElementById('errorContainer');
+    errorContainer.innerHTML = ''; // Limpia mensajes previos
+
+    const cart = JSON.parse(localStorage.getItem('cart')) || [];
+
+    if (cart.length === 0) {
+        errorContainer.innerHTML = '<p>El carrito está vacío.</p>';
+        return;
+    }
+
+    try {
+        const response = await fetch('/update-stock', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ cartItems: cart })
+        });
+
+        const result = await response.json();
+        if (!response.ok) throw new Error(result.error || 'Error al actualizar el stock');
+
+        alert('Compra completada con éxito.');
+        localStorage.removeItem('cart'); // Limpia el carrito
+        window.location.reload(); // Refresca la página
+    } catch (error) {
+        console.error('Error during purchase:', error);
+        errorContainer.innerHTML = `<p>Error: ${error.message}</p>`;
+    }
+});
+
+
+    </script>
 </body>
 
 </html>
