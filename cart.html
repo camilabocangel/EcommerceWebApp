@@ -60,7 +60,32 @@
                     <td id="cart-total"><strong>$0</strong></td>
                 </tr>
             </table>
-            <button class="normal">Proceed to Checkout</button>
+
+            <div class="pay-method-wrapper">
+                <button class="normal" id="payMethodBtn">Pay Method</button>
+        
+                <div id="paymentOptions" style="display: none;">
+                    <h4>Select Payment Method</h4>
+                    <div>
+                        <input type="radio" id="paypal" name="paymentMethod" value="PayPal">
+                        <label for="paypal">PayPal</label>
+                    </div>
+                    <div>
+                        <input type="radio" id="creditCard" name="paymentMethod" value="CreditCard">
+                        <label for="creditCard">Credit Card</label>
+                    </div>
+                    <div id="creditCardDetails" style="display: none;">
+                        <label for="cardNumber">Card Number:</label>
+                        <input type="text" id="cardNumber" placeholder="Enter your card number">
+                    
+                        <label for="cardExpiry">Expiry Date:</label>
+                        <input type="text" id="cardExpiry" placeholder="MM/YY">
+                    
+                        <label for="cardCvc">CVC:</label>
+                        <input type="text" id="cardCvc" placeholder="Enter CVC">
+                    </div>                        
+                </div>
+            </div>
         </div>
     </section>
 

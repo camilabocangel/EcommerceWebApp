@@ -1,12 +1,11 @@
 const express = require('express');
-const connectDB = require('./db'); 
 
 const router = express.Router();
 const api = require('./api');
 
-router.get('/products', api.getProducts);
 router.get('/api/products/:id', api.getProductById);
 router.post('/cart', api.addToCart);
 router.get('/cart', api.getCart);
+router.get('/api/products', api.getProducts)
 
 module.exports = router;

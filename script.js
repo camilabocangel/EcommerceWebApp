@@ -109,7 +109,6 @@ document.addEventListener("DOMContentLoaded", function () {
                     document.querySelector(".single-pro-details h2").textContent = "$" + product.price;
                     document.querySelector(".single-pro-details span").textContent = "Year: " + product.year;
 
-
                 })
                 .catch(error => console.error("Error fetching product:", error));
         }
@@ -134,49 +133,68 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 });
 
-
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
     const cartTableBody = document.querySelector('#cart-table-body');
     const cartSubtotal = document.querySelector('#cart-subtotal');
     const cartTotal = document.querySelector('#cart-total');
 
-    const products = JSON.parse(localStorage.getItem('products')) || [];
+    const cartItems = JSON.parse(localStorage.getItem('products')) || [];
 
-    if (products.length === 0) {
-        cartTableBody.innerHTML = '<tr><td colspan="7">Your cart is empty.</td></tr>';
+    if (cartItems.length === 0) {
+        cartTableBody.innerHTML = '<tr><td colspan="6">Your cart is empty.</td></tr>';
         return;
     }
 
-    let total = 0;
+    try {
+        const response = await fetch('http://localhost:3000/api/products');
+        const products = await response.json();
 
-    products.forEach(item => {
-        const product = products.find(p => p.id == item.id); 
+        let total = 0;
 
-        if (product) {
-            const subtotal = product.price * item.quantity;
-            total += subtotal;
+        cartItems.forEach(item => {
+            const product = products.find(p => p.id == item.id);
 
-            cartTableBody.innerHTML += `
-                <tr>
-                    <td><a href="#" class="remove-item" data-id="${item.id}"><i class="far fa-times-circle"></i></a></td>
-                    <td><img src="${product.image}" alt="${product.name}" width="50"></td>
-                    <td>${product.name}</td>
-                    <td>$${product.price}</td>
-                    <td>${item.quantity}</td>
-                    <td>$${subtotal}</td>
-                </tr>`;
-        }
+            if (product) {
+                const subtotal = (product.price * item.quantity);
+                total += subtotal;
+
+                cartTableBody.innerHTML += `
+                    <tr>
+                        <td><a href="#" class="remove-item" data-id="${item.id}"><i class="far fa-times-circle"></i></a></td>
+                        <td><img src="${product.image}" alt="${product.name}" width="50"></td>
+                        <td>${product.name}</td>
+                        <td>$${product.price}</td>
+                        <td>${item.quantity}</td>
+                        <td>$${subtotal}</td>
+                    </tr>`;
+            }
+        });
+
+        cartSubtotal.textContent = `$${total}`;
+        cartTotal.textContent = `$${total}`;
+
+        document.querySelectorAll('.remove-item').forEach(button => {
+            button.addEventListener('click', (e) => {
+                e.preventDefault();
+                const id = button.getAttribute('data-id');
+                removeFromCart(id);
+            });
+        });
+
+    } catch (error) {
+        console.error('Error loading cart:', error);
+        cartTableBody.innerHTML = '<tr><td colspan="6">Error loading cart data.</td></tr>';
+    }
+
+    payMethodBtn.addEventListener('click', () => {
+        paymentOptions.style.display = (paymentOptions.style.display === 'none' || paymentOptions.style.display === '') 
+            ? 'block' 
+            : 'none';
     });
 
-    cartSubtotal.textContent = `$${total}`;
-    cartTotal.innerHTML = `<strong>$${total}</strong>`;
-
-    document.querySelectorAll('.remove-item').forEach(button => {
-        button.addEventListener('click', (e) => {
-            e.preventDefault();
-            const id = button.getAttribute('data-id');
-            removeFromCart(id);
-        });
+    // Mostrar campos de tarjeta si se elige "Credit Card"
+    creditCardOption.addEventListener('change', () => {
+        creditCardDetails.style.display = creditCardOption.checked ? 'block' : 'none';
     });
 });
 
@@ -186,4 +204,6 @@ function removeFromCart(id) {
     localStorage.setItem('products', JSON.stringify(products));
     location.reload(); 
 }
+
+
 
