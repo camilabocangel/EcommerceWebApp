@@ -133,6 +133,141 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 });
 
+document.addEventListener("DOMContentLoaded", async () => {
+    try {
+        const response = await fetch('http://localhost:3000/api/products');
+        const products = await response.json();
+
+        console.log(products);
+
+        if (!Array.isArray(products) || products.length === 0) {
+            console.error("No products found");
+            return;
+        }
+
+        if (document.getElementById("new-arrivals-container")) {
+            showNewArrivals(products);
+        }
+
+        const brands = {
+            adidas: [],
+            nike: [],
+            puma: [],
+            converse: [],
+            newbalance: [],
+            reebok: []
+        };
+
+        products.forEach(product => {
+            const brandKey = product.brand.toLowerCase().replace(/\s+/g, '');
+            if (brands[brandKey]) {
+                brands[brandKey].push(product);
+            }
+        });
+
+        Object.keys(brands).forEach(brand => {
+            const section = document.getElementById(brand);
+            if (section) {
+                const container = section.querySelector('.pro-container');
+                if (container) {
+                    container.innerHTML = brands[brand].map(createProductHTML).join('');
+                }
+            }
+        });
+
+        assignProductClickEvents();
+
+    } catch (error) {
+        console.error("Error fetching products:", error);
+    }
+});
+
+function createProductHTML(product) {
+    return `
+        <div class="pro">
+            <img src="${product.image}" alt="${product.name}" class="product-link" data-id="${product.id}">
+            <div class="des">
+                <span>${product.brand}</span>
+                <h5>${product.name}</h5>
+                <h4> $${product.price}</h4>
+            </div>
+        </div>
+    `;
+}
+
+function showNewArrivals(products) {
+    const container = document.getElementById("new-arrivals-container");
+    if (!container) return;
+
+    const latestProducts = products.sort((a, b) => b.year - a.year).slice(0, 8);
+
+    container.innerHTML = latestProducts.map(product => `
+        <div class="pro">
+            <img src="${product.image}" alt="${product.name}" class="product-link" data-id="${product.id}">
+            <div class="des">
+                <span>${product.brand}</span>
+                <h5 class="product-link" data-id="${product.id}">${product.name}</h5>
+                <h4>$${product.price}</h4>
+            </div>
+        </div>
+    `).join("");
+
+    assignProductClickEvents();
+}
+
+
+function assignProductClickEvents() {
+    document.querySelectorAll(".pro").forEach(element => {
+        element.addEventListener("click", (event) => {
+            const productId = event.currentTarget.querySelector(".product-link").getAttribute("data-id");
+            if (productId) {
+                window.location.href = `sproduct.html?id=${productId}`;
+            } else {
+                console.error("No se encontró el ID del producto.");
+            }
+        });
+    });
+}
+
+
+document.addEventListener("DOMContentLoaded", function () {
+    if (window.location.pathname.includes("sproduct.html")) {
+        const params = new URLSearchParams(window.location.search);
+        const productId = params.get("id");
+
+        if (productId) {
+            fetch(`/api/products/${productId}`)
+                .then(response => response.json())
+                .then(product => {
+                    document.getElementById("MainImg").src = product.image;
+                    document.querySelector(".single-pro-details h4").textContent = product.brand + " " + product.name;
+                    document.querySelector(".single-pro-details h2").textContent = "$" + product.price;
+                    document.querySelector(".single-pro-details span").textContent = "Year: " + product.year;
+
+                })
+                .catch(error => console.error("Error fetching product:", error));
+        }
+    }
+});
+
+
+document.addEventListener("DOMContentLoaded", function () {
+    const faqs = document.querySelectorAll(".faq-question");
+
+    faqs.forEach((faq) => {
+        faq.addEventListener("click", function () {
+            document.querySelectorAll(".faq-answer").forEach(answer => {
+                if (answer !== this.nextElementSibling) {
+                    answer.style.display = "none";
+                }
+            });
+
+            let answer = this.nextElementSibling;
+            answer.style.display = (answer.style.display === "block") ? "none" : "block";
+        });
+    });
+});
+
 document.addEventListener('DOMContentLoaded', async () => {
     const cartTableBody = document.querySelector('#cart-table-body');
     const cartSubtotal = document.querySelector('#cart-subtotal');
@@ -158,8 +293,8 @@ document.addEventListener('DOMContentLoaded', async () => {
                 const subtotal = (product.price * item.quantity);
                 total += subtotal;
 
-                cartTableBody.innerHTML += `
-                    <tr>
+                cartTableBody.innerHTML += 
+                    `<tr>
                         <td><a href="#" class="remove-item" data-id="${item.id}"><i class="far fa-times-circle"></i></a></td>
                         <td><img src="${product.image}" alt="${product.name}" width="50"></td>
                         <td>${product.name}</td>
@@ -193,19 +328,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     const creditCardDetails = document.querySelector('#creditCardDetails');
     const completePurchase = document.querySelector('#completePurchase');
 
-    payMethodBtn.addEventListener('click', () => {
-        paymentOptions.style.display = (paymentOptions.style.display === 'none' || paymentOptions.style.display === '') 
-            ? 'block' 
-            : 'none';
-    });
-
-    creditCardOption.addEventListener('change', () => {
-        creditCardDetails.style.display = creditCardOption.checked ? 'block' : 'none';
-    });
-    payPalOption.addEventListener('change', () => {
-        creditCardDetails.style.display = payPalOption.checked ? 'block' : 'none';
-    });
     
+
     const showError = (input, message) => {
         const errorSpan = document.createElement('span');
         errorSpan.className = 'input-error';
@@ -223,7 +347,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     };
 
-    // Valida los campos de la tarjeta
     const validateCardDetails = () => {
         clearAllErrors();
 
@@ -271,83 +394,48 @@ document.addEventListener('DOMContentLoaded', async () => {
             console.error('Error al actualizar el stock:', error);
         }
     };
-    
 
-    completePurchase.addEventListener('click', async () => {
-        if ((creditCardOption.checked || payPalOption.checked) && !validateCardDetails()) {
-            return; 
+    // Clases y su implementación
+    class PaymentStrategy {
+        pay() {
+            throw "Este método debe ser implementado en una subclase.";
+        }
+    }
+
+    class PayPalPayment extends PaymentStrategy {
+        pay() {
+            console.log("Paypal payment simulation");
+            alert("Payment successful with PAYPAL");
+        }
+    }
+
+    class CreditCardPayment extends PaymentStrategy {
+        pay() {
+            console.log("Credit Card payment simulation");
+            alert("Payment successful with CREDIT CARD");
+        }
+    }
+
+    class PaymentContext {
+        constructor(paymentStrategy) {
+            this.paymentStrategy = paymentStrategy;
         }
 
-        await updateStock();
+        setPaymentStrategy(paymentStrategy) {
+            this.paymentStrategy = paymentStrategy;
+        }
 
-        localStorage.removeItem('products');
-        window.location.reload();
-    });
-
-});
-
-function removeFromCart(id) {
-    let products = JSON.parse(localStorage.getItem('products')) || [];
-    products = products.filter(product => product.id != id); 
-    localStorage.setItem('products', JSON.stringify(products));
-    location.reload(); 
-}
-
-/********************************************************************* */
-// Interfaz de estrategia de pago
-class PaymentStrategy {
-    pay() {
-        throw "Este método debe ser implementado en una subclase.";
+        executePayment() {
+            this.paymentStrategy.pay();
+        }
     }
-}
-
-class PayPalPayment extends PaymentStrategy {
-    pay() {
-        console.log("Simulando pago con PayPal...");
-        alert("Pago realizado con PayPal");
-    }
-}
-
-class CreditCardPayment extends PaymentStrategy {
-    pay() {
-        console.log("Simulando pago con tarjeta de crédito...");
-        alert("Pago realizado con tarjeta de crédito");
-    }
-}
-
-class PaymentContext {
-    constructor(paymentStrategy) {
-        this.paymentStrategy = paymentStrategy;
-    }
-
-    setPaymentStrategy(paymentStrategy) {
-        this.paymentStrategy = paymentStrategy;
-    }
-
-    executePayment() {
-        this.paymentStrategy.pay();
-    }
-}
-
-//Este DOM no debería existir y debería estar en el DOM de arriba, 
-// pero aquí surgen los problemas de la compatibilidad de los botones
-document.addEventListener('DOMContentLoaded', async () => {
-    const payMethodBtn = document.querySelector('#payMethodBtn');
-    const paymentOptions = document.querySelector('#paymentOptions');
-    const creditCardOption = document.querySelector('#creditCard');
-    const creditCardDetails = document.querySelector('#creditCardDetails');
-    const payButton = document.querySelector('#payButton');
-    const cartTableBody = document.querySelector('#cart-table-body');
-    const cartSubtotal = document.querySelector('#cart-subtotal');
-    const cartTotal = document.querySelector('#cart-total');
 
     const paypalStrategy = new PayPalPayment();
     const creditCardStrategy = new CreditCardPayment();
-
     let paymentContext = new PaymentContext(paypalStrategy); 
 
     payMethodBtn.addEventListener('click', () => {
-        paymentOptions.classList.toggle('show');
+        paymentOptions.style.display = (paymentOptions.style.display === 'none' ||  paymentOptions.style.display === '') ? 'block' : 'none';
     });
 
     creditCardOption.addEventListener('change', () => {
@@ -356,63 +444,38 @@ document.addEventListener('DOMContentLoaded', async () => {
             paymentContext.setPaymentStrategy(creditCardStrategy); 
         }
     });
-
-    const paypalOption = document.querySelector('#paypal');
-    paypalOption.addEventListener('change', () => {
+    payPalOption.addEventListener('change', () => {
+        creditCardDetails.style.display = payPalOption.checked ? 'block' : 'none';
         if (paypalOption.checked) {
             paymentContext.setPaymentStrategy(paypalStrategy); 
             creditCardDetails.style.display = 'none'; 
         }
     });
 
-    function clearCart() {
-        localStorage.removeItem('products');
-    }
+    completePurchase.addEventListener('click', async () => {
+        if ((creditCardOption.checked || payPalOption.checked) && !validateCardDetails()) {
+            completePurchase.disabled = false;
+            completePurchase.innerText = 'Confirm Payment';
+        } else {
+            completePurchase.disabled = true;
+            completePurchase.innerText = 'Processing...';
 
-    function showSuccessMessage() {
-        const successMessage = document.createElement('div');
-        successMessage.className = 'payment-success';
-        successMessage.textContent = '¡Pago exitoso! Redirigiendo a la página de inicio...';
-        document.body.appendChild(successMessage);
-        console.log("Iniciando el proceso de pago...");
+            await updateStock();
 
-        setTimeout(() => {
-            console.log('Redirigiendo a la página de inicio...');
-            successMessage.remove();
-            window.location.href = '/index.html'; 
-        }, 2000); 
-    }
-
-    // Botón de pago
-    if (payButton) {
-        payButton.addEventListener('click', () => {
-            payButton.disabled = true;
-            payButton.textContent = 'Procesando...';
+            localStorage.removeItem('products');
 
             setTimeout(() => {
-                // Ejecutar el pago usando la estrategia seleccionada
-                paymentContext.executePayment().then(() => {
+                paymentContext.executePayment();
+                window.location.href = 'cart.html'; 
+            }, 2000);
+        }
+    });
 
-                localStorage.removeItem('products');
-                alert('Purchase completed successfully!');
-                window.location.reload();
-                    showSuccessMessage();
-                }).catch((error) => {
-                    console.error('Error en el pago:', error);
-                    payButton.disabled = false;
-                    payButton.textContent = 'Confirm Payment';
-                });
-            }, 5000);
-             // Simulando un tiempo de espera de 5 segundos (5000 ms)
-        });
-    }
-
+    function removeFromCart(id) {
+        let products = JSON.parse(localStorage.getItem('products')) || [];
+        products = products.filter(product => product.id != id); 
+        localStorage.setItem('products', JSON.stringify(products));
+        location.reload(); 
+    }
 });
-
-
-
-
-
-
-
 
