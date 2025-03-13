@@ -212,20 +212,18 @@ class PaymentStrategy {
     }
 }
 
-// Estrategia concreta: PayPal
 class PayPalPayment extends PaymentStrategy {
     pay() {
         console.log("Simulando pago con PayPal...");
-        // Aquí se simula el pago, puedes realizar alguna lógica o actualización de estado
+        // Aquí se simula el pago
         alert("Pago realizado con PayPal");
     }
 }
 
-// Estrategia concreta: Tarjeta de Crédito
 class CreditCardPayment extends PaymentStrategy {
     pay() {
         console.log("Simulando pago con tarjeta de crédito...");
-        // Aquí se simula el pago, puedes realizar alguna lógica o actualización de estado
+        // Simula el pago
         alert("Pago realizado con tarjeta de crédito");
     }
 }
@@ -244,6 +242,7 @@ class PaymentContext {
         this.paymentStrategy.pay();
     }
 }
+
 document.addEventListener('DOMContentLoaded', async () => {
     const payMethodBtn = document.querySelector('#payMethodBtn');
     const paymentOptions = document.querySelector('#paymentOptions');
@@ -279,8 +278,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     const paypalOption = document.querySelector('#paypal');
     paypalOption.addEventListener('change', () => {
         if (paypalOption.checked) {
-            paymentContext.setPaymentStrategy(paypalStrategy); // Cambiar la estrategia a PayPal
-            creditCardDetails.style.display = 'none'; // Ocultar detalles de tarjeta de crédito
+            paymentContext.setPaymentStrategy(paypalStrategy); 
+            creditCardDetails.style.display = 'none'; 
         }
     });
 
@@ -301,10 +300,9 @@ document.addEventListener('DOMContentLoaded', async () => {
             console.log('Redirigiendo a la página de inicio...');
             successMessage.remove();
             window.location.href = '/index.html'; // Redirigir a la página de inicio
-        }, 2000); // El mensaje se muestra por 2 segundos antes de redirigir
+        }, 2000); 
     }
 
-    // Botón de pago
     if (payButton) {
         payButton.addEventListener('click', () => {
             // Deshabilitar el botón de pago para evitar pagos duplicados
@@ -314,27 +312,14 @@ document.addEventListener('DOMContentLoaded', async () => {
             // Simulando un retraso de 5 segundos para el proceso de pago
             setTimeout(() => {
                 // Ejecutar el pago usando la estrategia seleccionada
-                paymentContext.executePayment().then(() => {
-                    // Vaciar el carrito después del pago exitoso
-                    clearCart();
-                    
-                    // Mostrar la notificación de pago exitoso
-                    showSuccessMessage();
-                }).catch((error) => {
-                    // Si ocurre algún error, habilitar el botón nuevamente y mostrar un mensaje de error
-                    console.error('Error en el pago:', error);
-                    payButton.disabled = false;
-                    payButton.textContent = 'Pagar';
-                });
-            }, 5000); // Simulando un tiempo de espera de 5 segundos (5000 ms)
+                paymentContext.executePayment();  // Simula el pago
+
+                // Vaciar el carrito después del pago exitoso
+                clearCart();
+                
+                // Mostrar la notificación de pago exitoso
+                showSuccessMessage();
+            }, 4000); // Simulando un tiempo de espera de 5 segundos (5000 ms)
         });
     }
 });
-
-
-
-
-
-
-
-
