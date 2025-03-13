@@ -62,14 +62,12 @@ async function updateStock(req, res) {
         for (const item of cartItems) {
             const { id, quantity } = item;
 
-            // Verificar si el producto existe
             const product = await db.get('SELECT * FROM products WHERE id = ?', [id]);
             if (!product) {
                 console.warn(`Producto con id ${id} no encontrado.`);
-                continue; // Salta este producto si no existe
+                continue; 
             }
 
-            // Actualizar el stock restando la cantidad del carrito
             await db.run('UPDATE products SET quantity = quantity - ? WHERE id = ?', [quantity, id]);
             console.log(`Stock actualizado para el producto ${id}: -${quantity}`);
         }

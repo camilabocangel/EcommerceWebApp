@@ -85,8 +85,9 @@
                         <input type="text" id="cardCvc" placeholder="Enter CVC">
 
                         <button class="normal" id="completePurchase">Complete Purchase</button>
-                    </div>                        
+                    </div>
                 </div>
+                <button id="payButton" class="normal">Confirm Payment</button>
             </div>
         </div>
     </section>
@@ -97,6 +98,7 @@
             <h4>Contact</h4>
             <p><strong>Joaquin Aguilera - </strong>78619</p>
             <p><strong>Camila Bocangel - </strong>76625</p>
+            <p><strong>Santiago Acha - </strong>77251</p>
         </div>
         <div class="col methods">
             <p>Secured Payment Gateways</p>
@@ -109,7 +111,7 @@
     <script>
         document.getElementById('completePurchase').addEventListener('click', async () => {
     const errorContainer = document.getElementById('errorContainer');
-    errorContainer.innerHTML = ''; // Limpia mensajes previos
+    errorContainer.innerHTML = ''; 
 
     const cart = JSON.parse(localStorage.getItem('cart')) || [];
 
@@ -129,8 +131,8 @@
         if (!response.ok) throw new Error(result.error || 'Error al actualizar el stock');
 
         alert('Compra completada con éxito.');
-        localStorage.removeItem('cart'); // Limpia el carrito
-        window.location.reload(); // Refresca la página
+        localStorage.removeItem('cart'); 
+        window.location.reload(); 
     } catch (error) {
         console.error('Error during purchase:', error);
         errorContainer.innerHTML = `<p>Error: ${error.message}</p>`;

@@ -225,7 +225,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Valida los campos de la tarjeta
     const validateCardDetails = () => {
-        clearAllErrors(); // Limpiar errores anteriores
+        clearAllErrors();
 
         const cardNumber = document.querySelector('#cardNumber');
         const cardExpiry = document.querySelector('#cardExpiry');
@@ -252,7 +252,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const updateStock = async () => {
         const cartItems = JSON.parse(localStorage.getItem('products')) || [];
-        console.log('Enviando cartItems:', cartItems); // Verifica en consola
+        console.log('Enviando cartItems:', cartItems);
     
         try {
             const response = await fetch('http://localhost:3000/api/update-stock', {
@@ -273,19 +273,15 @@ document.addEventListener('DOMContentLoaded', async () => {
     };
     
 
-    // Evento del botón "Complete Purchase"
     completePurchase.addEventListener('click', async () => {
         if ((creditCardOption.checked || payPalOption.checked) && !validateCardDetails()) {
-            return; // Detener si la validación falla
+            return; 
         }
 
-        // Actualizar el stock antes de vaciar el carrito
         await updateStock();
 
-        // Limpiar el carrito si todo está validado
         localStorage.removeItem('products');
-        alert('Purchase completed successfully!');
-        window.location.reload(); // Recargar la página
+        window.location.reload();
     });
 
 });
@@ -296,6 +292,127 @@ function removeFromCart(id) {
     localStorage.setItem('products', JSON.stringify(products));
     location.reload(); 
 }
+
+/********************************************************************* */
+// Interfaz de estrategia de pago
+class PaymentStrategy {
+    pay() {
+        throw "Este método debe ser implementado en una subclase.";
+    }
+}
+
+class PayPalPayment extends PaymentStrategy {
+    pay() {
+        console.log("Simulando pago con PayPal...");
+        alert("Pago realizado con PayPal");
+    }
+}
+
+class CreditCardPayment extends PaymentStrategy {
+    pay() {
+        console.log("Simulando pago con tarjeta de crédito...");
+        alert("Pago realizado con tarjeta de crédito");
+    }
+}
+
+class PaymentContext {
+    constructor(paymentStrategy) {
+        this.paymentStrategy = paymentStrategy;
+    }
+
+    setPaymentStrategy(paymentStrategy) {
+        this.paymentStrategy = paymentStrategy;
+    }
+
+    executePayment() {
+        this.paymentStrategy.pay();
+    }
+}
+
+//Este DOM no debería existir y debería estar en el DOM de arriba, 
+// pero aquí surgen los problemas de la compatibilidad de los botones
+document.addEventListener('DOMContentLoaded', async () => {
+    const payMethodBtn = document.querySelector('#payMethodBtn');
+    const paymentOptions = document.querySelector('#paymentOptions');
+    const creditCardOption = document.querySelector('#creditCard');
+    const creditCardDetails = document.querySelector('#creditCardDetails');
+    const payButton = document.querySelector('#payButton');
+    const cartTableBody = document.querySelector('#cart-table-body');
+    const cartSubtotal = document.querySelector('#cart-subtotal');
+    const cartTotal = document.querySelector('#cart-total');
+
+    const paypalStrategy = new PayPalPayment();
+    const creditCardStrategy = new CreditCardPayment();
+
+    let paymentContext = new PaymentContext(paypalStrategy); 
+
+    payMethodBtn.addEventListener('click', () => {
+        paymentOptions.classList.toggle('show');
+    });
+
+    creditCardOption.addEventListener('change', () => {
+        creditCardDetails.style.display = creditCardOption.checked ? 'block' : 'none';
+        if (creditCardOption.checked) {
+            paymentContext.setPaymentStrategy(creditCardStrategy); 
+        }
+    });
+
+    const paypalOption = document.querySelector('#paypal');
+    paypalOption.addEventListener('change', () => {
+        if (paypalOption.checked) {
+            paymentContext.setPaymentStrategy(paypalStrategy); 
+            creditCardDetails.style.display = 'none'; 
+        }
+    });
+
+    function clearCart() {
+        localStorage.removeItem('products');
+    }
+
+    function showSuccessMessage() {
+        const successMessage = document.createElement('div');
+        successMessage.className = 'payment-success';
+        successMessage.textContent = '¡Pago exitoso! Redirigiendo a la página de inicio...';
+        document.body.appendChild(successMessage);
+        console.log("Iniciando el proceso de pago...");
+
+        setTimeout(() => {
+            console.log('Redirigiendo a la página de inicio...');
+            successMessage.remove();
+            window.location.href = '/index.html'; 
+        }, 2000); 
+    }
+
+    // Botón de pago
+    if (payButton) {
+        payButton.addEventListener('click', () => {
+            payButton.disabled = true;
+            payButton.textContent = 'Procesando...';
+
+            setTimeout(() => {
+                // Ejecutar el pago usando la estrategia seleccionada
+                paymentContext.executePayment().then(() => {
+
+                localStorage.removeItem('products');
+                alert('Purchase completed successfully!');
+                window.location.reload();
+                    showSuccessMessage();
+                }).catch((error) => {
+                    console.error('Error en el pago:', error);
+                    payButton.disabled = false;
+                    payButton.textContent = 'Confirm Payment';
+                });
+            }, 5000);
+             // Simulando un tiempo de espera de 5 segundos (5000 ms)
+        });
+    }
+
+});
+
+
+
+
+
 
 
 
