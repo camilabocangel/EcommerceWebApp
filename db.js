@@ -6,7 +6,7 @@ async function connectDB() {
         host: 'ecommerce-db.cw3gywuw69nd.us-east-1.rds.amazonaws.com',
         user: 'admin',
         password: 'flor2013',
-        database: 'ecommerce-db',
+        database: 'ecommerce_db',
         port: process.env.DB_PORT || 3306
     });
 
