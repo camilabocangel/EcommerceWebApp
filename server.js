@@ -1,11 +1,16 @@
+require('dotenv').config();
 const express = require('express');
-const cors = require('cors'); // Importa el middleware CORS
+const cors = require('cors'); 
+const path = require('path'); // <--- importante importar 'path'
 const app = express();
 const { getProducts, getProductById, addToCart, getCart, updateStock } = require('./api');
 
 // Middleware
-app.use(cors()); // Permite solicitudes CORS
-app.use(express.json()); // Para parsear el cuerpo de las solicitudes JSON
+app.use(cors());
+app.use(express.json());
+
+// Servir archivos estáticos desde la carpeta "public"
+app.use(express.static(path.join(__dirname, 'public')));
 
 // Rutas de la API
 app.get('/api/products', getProducts);
@@ -16,8 +21,8 @@ app.post('/api/update-stock', updateStock);
 
 // Manejo de errores
 app.use((err, req, res, next) => {
-    console.error(err.stack); // Imprime el error en la consola
-    res.status(500).send('Algo salió mal!'); // Responde con un mensaje de error
+    console.error(err.stack);
+    res.status(500).send('Algo salió mal!');
 });
 
 // Iniciar el servidor
