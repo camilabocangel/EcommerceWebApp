@@ -1,6 +1,6 @@
 document.addEventListener("DOMContentLoaded", async () => {
     try {
-        const response = await fetch('http://localhost:3000/api/products');
+        const response = await fetch('/api/products');
         const products = await response.json();
 
         console.log(products);
@@ -135,7 +135,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 document.addEventListener("DOMContentLoaded", async () => {
     try {
-        const response = await fetch('http://localhost:3000/api/products');
+        const response = await fetch('/api/products');
         const products = await response.json();
 
         console.log(products);
@@ -281,7 +281,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     try {
-        const response = await fetch('http://localhost:3000/api/products');
+        const response = await fetch('/api/products');
         const products = await response.json();
 
         let total = 0;
@@ -378,7 +378,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         console.log('Enviando cartItems:', cartItems);
     
         try {
-            const response = await fetch('http://localhost:3000/api/update-stock', {
+            const response = await fetch('/api/update-stock', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ cartItems }),
@@ -479,3 +479,25 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 });
 
+document.addEventListener("DOMContentLoaded", function() {
+    const faqs = document.querySelectorAll(".faq-question");
+    
+    faqs.forEach((faq) => {
+        faq.addEventListener("click", function() {
+            document.querySelectorAll(".faq-answer").forEach(answer => {
+                if (answer !== this.nextElementSibling) {
+                    answer.style.display = "none";
+                }
+            });
+            
+            const answer = this.nextElementSibling;
+            answer.style.display = answer.style.display === "block" ? "none" : "block";
+            
+            const icon = this.querySelector("i");
+            if (icon) {
+                icon.className = answer.style.display === "block" ? 
+                    "far fa-minus-circle" : "far fa-plus-circle";
+            }
+        });
+    });
+});

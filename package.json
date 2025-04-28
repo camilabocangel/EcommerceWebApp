@@ -4,22 +4,24 @@
   "main": "api.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
+    "start": "node server.js",
+    "dev": "nodemon server.js"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/joackagui/EcommerceWebApp.git"
+    "url": "git+https://github.com/camilabocangel/EcommerceWebApp.git"
   },
   "keywords": [],
-  "author": "",
+  "author": "Joack (forked from camilabocangel)",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/joackagui/EcommerceWebApp/issues"
+    "url": "https://github.com/camilabocangel/EcommerceWebApp/issues"
   },
-  "homepage": "https://github.com/joackagui/EcommerceWebApp#readme",
-  "description": "",
+  "homepage": "https://github.com/camilabocangel/EcommerceWebApp#readme",
   "dependencies": {
     "express": "^4.21.2",
+    "cors": "^2.8.5",
+    "sqlite3": "^5.0.2",
     "nodemon": "^3.1.9"
   }
 }
