@@ -60,7 +60,7 @@ async function updateStock(req, res) {
 
         for (const item of cartItems) {
             const { id, quantity } = item;
-            const [product] = await db.execute('SELECT * FROM products WHERE id = ?', [id]);
+            const [product] = await cdb.exeute('SELECT * FROM products WHERE id = ?', [id]);
             
             if (!product[0]) {
                 console.warn(`Producto con id ${id} no encontrado.`);
