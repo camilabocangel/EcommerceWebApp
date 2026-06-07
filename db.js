@@ -1,32 +1,41 @@
-// db.js - Versión para MySQL/RDS
-const mysql = require('mysql2/promise');
+// db.js - Versión para SQLite (base local shoes.db)
+const sqlite3 = require('sqlite3');
+const { open } = require('sqlite');
+const path = require('path');
+
+let dbPromise = null;
+
 async function connectDB() {
-    const db = await mysql.createConnection({
-        host: process.env.DB_HOST,
-        user: process.env.DB_USER,
-        password: process.env.DB_PASSWORD,
-        database: process.env.DB_NAME,
-        port: process.env.DB_PORT || 3306
-    });
+    // Reutiliza la misma conexión (singleton)
+    if (dbPromise) return dbPromise;
 
-    console.log('Connected with MySQL database.');
+    dbPromise = (async () => {
+        const db = await open({
+            filename: path.join(__dirname, 'shoes.db'),
+            driver: sqlite3.Database
+        });
 
-    // Crear tabla si no existe
-    await db.execute(`CREATE TABLE IF NOT EXISTS products (
-        id INT AUTO_INCREMENT PRIMARY KEY,
-        brand VARCHAR(255) NOT NULL,
-        name VARCHAR(255) NOT NULL,
-        image VARCHAR(255) NOT NULL,
-        price DECIMAL(10, 2) NOT NULL,
-        year INT NOT NULL,
-        quantity INT DEFAULT 0
-    )`);
+        console.log('Connected with SQLite database.');
 
-    // Verificar si hay productos
-    const [rows] = await db.execute("SELECT COUNT(*) AS count FROM products");
-    if (rows[0].count === 0) await insertProducts(db);
+        // Crear tabla si no existe
+        await db.exec(`CREATE TABLE IF NOT EXISTS products (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            brand TEXT NOT NULL,
+            name TEXT NOT NULL,
+            image TEXT NOT NULL,
+            price REAL NOT NULL,
+            year INTEGER NOT NULL,
+            quantity INTEGER DEFAULT 0
+        )`);
 
-    return db;
+        // Verificar si hay productos
+        const row = await db.get("SELECT COUNT(*) AS count FROM products");
+        if (row.count === 0) await insertProducts(db);
+
+        return db;
+    })();
+
+    return dbPromise;
 }
 
 async function insertProducts(db) {
@@ -58,7 +67,7 @@ async function insertProducts(db) {
     ];
 
     for (let p of products) {
-        await db.execute(
+        await db.run(
             "INSERT INTO products (brand, name, image, price, year, quantity) VALUES (?, ?, ?, ?, ?, ?)",
             [p.brand, p.name, p.image, p.price, p.year, p.quantity]
         );

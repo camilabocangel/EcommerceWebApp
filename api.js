@@ -3,12 +3,12 @@ const connectDB = require('./db');
 async function getProductById(req, res) {
     try {
         const db = await connectDB();
-        const [product] = await db.execute('SELECT * FROM products WHERE id = ?', [req.params.id]);
+        const product = await db.get('SELECT * FROM products WHERE id = ?', [req.params.id]);
 
-        if (!product[0]) {
+        if (!product) {
             return res.status(404).json({ error: 'Product not found' });
         }
-        res.json(product[0]);
+        res.json(product);
     } catch (error) {
         console.error('Error while loading product:', error);
         res.status(500).json({ error: 'Error while loading product' });
@@ -18,7 +18,7 @@ async function getProductById(req, res) {
 async function getProducts(req, res) {
     try {
         const db = await connectDB();
-        const [products] = await db.execute('SELECT * FROM products');
+        const products = await db.all('SELECT * FROM products');
         res.json(products);
     } catch (error) {
         console.error('Error while fetching products:', error);
@@ -30,7 +30,7 @@ async function addToCart(req, res) {
     const { productId, quantity } = req.body;
     try {
         const db = await connectDB();
-        await db.execute('UPDATE products SET quantity = ? WHERE id = ?', [quantity, productId]);
+        await db.run('UPDATE products SET quantity = ? WHERE id = ?', [quantity, productId]);
         res.json({ message: 'Product added to cart' });
     } catch (error) {
         console.error('Error while adding to cart:', error);
@@ -41,7 +41,7 @@ async function addToCart(req, res) {
 async function getCart(req, res) {
     try {
         const db = await connectDB();
-        const [products] = await db.execute('SELECT * FROM products WHERE quantity < 3'); // Ejemplo: muestra productos con stock reducido
+        const products = await db.all('SELECT * FROM products WHERE quantity < 3'); // Ejemplo: muestra productos con stock reducido
         res.json(products);
     } catch (error) {
         console.error('Error while loading cart:', error);
@@ -60,14 +60,14 @@ async function updateStock(req, res) {
 
         for (const item of cartItems) {
             const { id, quantity } = item;
-            const [product] = await cdb.exeute('SELECT * FROM products WHERE id = ?', [id]);
-            
-            if (!product[0]) {
+            const product = await db.get('SELECT * FROM products WHERE id = ?', [id]);
+
+            if (!product) {
                 console.warn(`Producto con id ${id} no encontrado.`);
                 continue;
             }
 
-            await db.execute('UPDATE products SET quantity = quantity - ? WHERE id = ?', [quantity, id]);
+            await db.run('UPDATE products SET quantity = quantity - ? WHERE id = ?', [quantity, id]);
             console.log(`Stock actualizado para el producto ${id}: -${quantity}`);
         }
 
