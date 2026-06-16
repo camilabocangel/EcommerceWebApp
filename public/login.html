@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign in - Ecommerce</title>
+    <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" />
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .auth-wrap { max-width: 420px; margin: 60px auto; padding: 0 20px; }
+        .auth-wrap h2 { margin-bottom: 8px; }
+        .auth-wrap input { display: block; width: 100%; padding: 10px; margin: 8px 0; box-sizing: border-box; }
+        .auth-wrap button { margin-top: 10px; }
+        .auth-msg { color: #c00; min-height: 20px; }
+        .auth-ok { color: #088; }
+        .tabs { display: flex; gap: 10px; margin-bottom: 16px; }
+        .tabs button { cursor: pointer; }
+    </style>
+</head>
+
+<body>
+    <section id="header">
+        <a href="index.html"><img src="img/logo.png" class="logo" style="width:150px;height:auto;"></a>
+        <div>
+            <ul id="navbar">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="shop.html">Shop</a></li>
+                <li><a class="active" href="login.html">Sign in</a></li>
+                <li><a href="cart.html"><i class="far fa-shopping-bag"></i></a></li>
+            </ul>
+        </div>
+    </section>
+
+    <div class="auth-wrap">
+        <div class="tabs">
+            <button class="normal" id="tabLogin">Sign in</button>
+            <button class="normal" id="tabRegister">Register</button>
+        </div>
+
+        <!-- Login -->
+        <div id="formLogin">
+            <h2>Sign in</h2>
+            <input type="email" id="loginEmail" placeholder="Email" value="ana.cliente@example.com">
+            <input type="password" id="loginPassword" placeholder="Password" value="Cliente123!">
+            <button class="normal" id="btnLogin">Sign in</button>
+        </div>
+
+        <!-- Register -->
+        <div id="formRegister" style="display:none;">
+            <h2>Create account</h2>
+            <input type="text" id="regNombre" placeholder="Name">
+            <input type="email" id="regEmail" placeholder="Email">
+            <input type="password" id="regPassword" placeholder="Password">
+            <button class="normal" id="btnRegister">Register</button>
+        </div>
+
+        <p class="auth-msg" id="msg"></p>
+    </div>
+
+    <script src="auth.js"></script>
+    <script>
+        const $ = (id) => document.getElementById(id);
+        const msg = $('msg');
+        $('tabLogin').onclick = () => { $('formLogin').style.display = 'block'; $('formRegister').style.display = 'none'; msg.textContent = ''; };
+        $('tabRegister').onclick = () => { $('formLogin').style.display = 'none'; $('formRegister').style.display = 'block'; msg.textContent = ''; };
+
+        $('btnLogin').onclick = async () => {
+            msg.className = 'auth-msg'; msg.textContent = '';
+            try {
+                const res = await fetch('/api/login', {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: $('loginEmail').value, password: $('loginPassword').value })
+                });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.error || 'Error');
+                Auth.guardarSesion(data.token, data.cliente);
+                window.location.href = 'shop.html';
+            } catch (e) { msg.textContent = e.message; }
+        };
+
+        $('btnRegister').onclick = async () => {
+            msg.className = 'auth-msg'; msg.textContent = '';
+            try {
+                const res = await fetch('/api/register', {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ nombre: $('regNombre').value, email: $('regEmail').value, password: $('regPassword').value })
+                });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.error || 'Error');
+                msg.className = 'auth-msg auth-ok';
+                msg.textContent = 'Account created. You can now sign in.';
+                $('tabLogin').click();
+                $('loginEmail').value = data.email;
+            } catch (e) { msg.textContent = e.message; }
+        };
+    </script>
+</body>
+
+</html>

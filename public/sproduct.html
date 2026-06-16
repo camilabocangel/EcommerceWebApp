@@ -21,6 +21,8 @@
                 <li><a href="about.html">About</a></li>
                 <li><a href="contact.html">Contact</a></li>
                 <li><a href="cart.html"><i class="far fa-shopping-bag"></i></a></li>
+                <li id="nav-login"><a href="login.html">Sign in</a></li>
+                <li id="nav-session"></li>
             </ul>
         </div>
     </section>
@@ -53,6 +55,7 @@
             <h4>Contact</h4>
             <p><strong>Joaquin Aguilera - </strong>78619</p>
             <p><strong>Camila Bocangel - </strong>76625</p>
+            <p><strong>Santiago Acha - </strong>77251</p>
         </div>
         <div class="col methods">
             <p>Secured Payment Gateways</p>
@@ -60,64 +63,53 @@
         </div>
     </footer>
 
+    <script src="auth.js"></script>
     <script src="script.js"></script>
-    
+
     <script>
         function getProductId() {
-            const params = new URLSearchParams(window.location.search);
-            return params.get("id");
+            return new URLSearchParams(window.location.search).get("id");
         }
-    
+
         const productId = getProductId();
-    
+        let productoActual = null;  // guardará uuid y stock
+
         if (productId) {
-            fetch(`http://localhost:3000/api/products/${productId}`)
+            fetch(`/api/products/${productId}`)
                 .then(response => {
                     if (!response.ok) throw new Error("Product not found");
                     return response.json();
                 })
                 .then(product => {
+                    productoActual = product;   // incluye uuid (enlace con Postgres) y quantity (stock Mongo)
                     document.getElementById("productName").textContent = product.brand + " " + product.name;
                     document.getElementById("productBrand").textContent = product.brand;
                     document.getElementById("productYear").textContent = product.year;
                     document.getElementById("productPrice").textContent = product.price;
-    
-                    if (product.image) {
-                        document.getElementById("MainImg").src = product.image;
-                    }
-    
+                    if (product.image) document.getElementById("MainImg").src = product.image;
                 })
                 .catch(error => console.error(error));
         }
-    
-        document.getElementById("addToCart").addEventListener("click", () => {
-            if (!productId) return alert("Producto no encontrado.");
-    
-            const quantity = parseInt(document.getElementById("quantityInput").value);
-    
-            fetch(`http://localhost:3000/api/products/${productId}`)
-                .then(response => response.json())
-                .then(product => {
-                    const stockAvailable = product.quantity;
-    
-                    if (quantity > stockAvailable) {
-                        alert("No hay suficiente stock disponible.");
-                    } else {
-                        let products = JSON.parse(localStorage.getItem("products")) || [];
-                        let alreadyExists = products.find(product => product.id == productId);
-                        if (alreadyExists) {
-                            alreadyExists.quantity += quantity;
-                        } else {
-                            let tupla = { id: productId, quantity: quantity };
-                            products.push(tupla);
-                            
-                        }
-                        localStorage.setItem("products", JSON.stringify(products));
-                        window.location.href = `cart.html`;
 
-                    }
-                })
-                .catch(error => console.error(error));
+        document.getElementById("addToCart").addEventListener("click", async () => {
+            if (!productoActual) return alert("Product not found.");
+            if (!Auth.requerir()) return;  // exige login
+
+            const quantity = parseInt(document.getElementById("quantityInput").value, 10);
+            if (!quantity || quantity < 1) return alert("Invalid quantity.");
+            if (quantity > productoActual.quantity) return alert("Not enough stock available.");
+
+            try {
+                // Carrito en el servidor (MongoDB) enlazado por producto_uuid
+                const res = await Auth.fetch('/api/cart', {
+                    method: 'POST',
+                    body: JSON.stringify({ producto_uuid: productoActual.uuid, cantidad: quantity })
+                });
+                if (!res.ok) throw new Error((await res.json()).error || 'Could not add to cart');
+                window.location.href = 'cart.html';
+            } catch (e) {
+                alert(e.message);
+            }
         });
     </script>
     

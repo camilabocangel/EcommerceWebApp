@@ -1,0 +1,17 @@
+sequenceDiagram
+  actor C as Cliente
+  participant S as Express (checkout.js)
+  participant M as MongoDB
+  participant P as PostgreSQL
+  C->>S: POST /api/checkout (JWT)
+  S->>M: lee carrito (cliente_uuid)
+  S->>M: valida stock y precio
+  S->>P: procesar_pago() BEGIN..COMMIT (ACID)
+  P-->>S: pedido + factura OK
+  S->>M: descuenta stock + vacia carrito
+  alt Mongo OK
+    S-->>C: estado completado
+  else Mongo falla tras el commit
+    S->>P: incidente + estado revision
+    S-->>C: estado revision (saga)
+  end

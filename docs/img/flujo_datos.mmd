@@ -1,0 +1,38 @@
+flowchart TB
+  subgraph CL["Navegador (Frontend)"]
+    UI["login / shop / cart / sproduct<br/>auth.js — guarda el JWT"]
+  end
+  subgraph SV["Servidor Express (server.js)"]
+    MW["requireAuth<br/>JWT to req.cliente.uuid"]
+    AUTH["auth.js<br/>register / login (bcrypt + JWT)"]
+    CAT["api.js — catalogo"]
+    CART["carrito.js / preferencias.js"]
+    CHK["checkout.js — saga"]
+    RES["resumen.js — vista 360"]
+  end
+  subgraph PG["PostgreSQL — transaccional"]
+    PGT["clientes · direcciones · pedidos<br/>pedido_items · pagos (token cifrado)<br/>facturas · incidentes_stock"]
+    FN["procesar_pago() ACID<br/>RBAC · RLS · pgcrypto"]
+  end
+  subgraph MG["MongoDB — catalogo (27018)"]
+    PROD["productos<br/>etiquetas / atributos / variantes + vistas"]
+    CARTS["carritos · preferencias<br/>(por cliente_uuid)"]
+  end
+  UI -->|HTTP + Bearer JWT| MW
+  MW --> AUTH
+  MW --> CAT
+  MW --> CART
+  MW --> CHK
+  MW --> RES
+  AUTH -->|valida credenciales| PGT
+  CAT -->|catalogo + stock| PROD
+  CART -->|por cliente_uuid| CARTS
+  CHK -->|1 lee carrito| CARTS
+  CHK -->|2 valida stock y precio| PROD
+  CHK -->|3 procesar_pago ACID| FN
+  FN --> PGT
+  CHK -->|4 descuenta stock y vacia carrito| PROD
+  CHK -.->|4b si Mongo falla: incidente + estado revision| PGT
+  RES -->|pedidos + facturas RLS| PGT
+  RES -->|carrito + prefs + detalle| MG
+  PGT -.->|enlace UUID: clientes.id a cliente_uuid y pedido_items.producto_uuid a productos.uuid| MG

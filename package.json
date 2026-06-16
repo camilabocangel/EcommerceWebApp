@@ -4,7 +4,13 @@
   "main": "api.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
+    "start": "node server.js",
+    "db:up": "docker compose up -d --wait",
+    "db:schema": "docker exec -i ecommerce_postgres psql -U ecommerce_user -d ecommerce_transaccional -v ON_ERROR_STOP=1 -v cliente_pwd=cliente_local_dev -v vendedor_pwd=vendedor_local_dev -v admin_pwd=admin_local_dev < db/sql/schema.sql",
+    "db:mongo": "node scripts/migrar_a_mongo.js",
+    "db:seed": "node scripts/seed_postgres.js",
+    "setup": "npm run db:up && npm run db:schema && npm run db:mongo && npm run db:seed",
+    "demo": "node scripts/verificar_integracion.js"
   },
   "repository": {
     "type": "git",
@@ -19,11 +25,16 @@
   "homepage": "https://github.com/joackagui/EcommerceWebApp#readme",
   "description": "",
   "dependencies": {
+    "bcryptjs": "^3.0.3",
     "cors": "^2.8.5",
     "dotenv": "^16.5.0",
     "express": "^4.21.2",
+    "express-session": "^1.19.0",
+    "jsonwebtoken": "^9.0.3",
+    "mongodb": "^7.2.0",
     "mysql2": "^3.6.5",
     "nodemon": "^3.1.9",
+    "pg": "^8.21.0",
     "sqlite": "^5.1.1",
     "sqlite3": "^5.1.7"
   }
